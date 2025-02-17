@@ -1,0 +1,10 @@
+django
+django-cors-headers
+mysqlclient
+djangorestframework
+python-dotenv
+opentelemetry-sdk
+boto3
+opentelemetry-instrumentation-django
+opentelemetry-instrumentation-requests
+

@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
+from opentelemetry.instrumentation.django import DjangoInstrumentor
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +29,19 @@ SECRET_KEY = 'django-insecure-tn11w6(smmvvv6x%frz$a3+ex!mq69b4b#kz63c&$u@bu(q&2h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["7ea4-130-126-255-80.ngrok-free.app", "d2af-130-126-255-80.ngrok-free.app"]
+ALLOWED_HOSTS = ["7ea4-130-126-255-80.ngrok-free.app", "d2af-130-126-255-80.ngrok-free.app", "localhost"]
 
+# Set up the tracer provider
+trace.set_tracer_provider(TracerProvider())
+tracer = trace.get_tracer(__name__)
+
+# Add a span processor to export traces
+trace.get_tracer_provider().add_span_processor(
+    BatchSpanProcessor(ConsoleSpanExporter())  # Exports traces to console
+)
+
+# Instrument Django
+DjangoInstrumentor().instrument()
 
 # Application definition
 
@@ -43,6 +58,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'uniquip.middleware.OpenTelemetryMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',

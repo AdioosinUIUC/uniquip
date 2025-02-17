@@ -19,6 +19,7 @@ from .serializers import (
 from .filters import ReservationFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.timezone import now
+from uniquip.utils.s3_logger import S3Logger, LogLevel
 
 # class StudentViewSet(viewsets.ModelViewSet):
 #     queryset = Student.objects.all()
@@ -43,6 +44,7 @@ from django.utils.timezone import now
 # class CourseLabViewSet(viewsets.ModelViewSet):
 #     queryset = CourseLab.objects.all()
 #     serializer_class = CourseLabSerializer
+logger = S3Logger()
 
 class EquipmentPagination(PageNumberPagination):
     page_size = 5
@@ -237,6 +239,7 @@ class EquipmentListView(APIView):
     pagination_class = CustomPagination()
 
     def get(self, request):
+        logger.log("Getting Equipment List", LogLevel.INFO)
         page_number = request.query_params.get('page', 1)
         page_size = request.query_params.get('page_size', 10)
         net_id = request.query_params.get('net_id')
